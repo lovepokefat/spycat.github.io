@@ -1,58 +1,81 @@
 let started = false;
+let currentStep = 0;
 const audio = document.getElementById("bgm");
 
-/* start card */
 function startCard() {
   if (started) return;
   started = true;
+  audio.play();
+  showNextPage();
+}
 
+function showNextPage() {
+  currentStep++;
   const card = document.querySelector(".card");
   const h1 = card.querySelector("h1");
   const textElement = document.getElementById("text");
 
-  audio.play();
-
-  // 1. เริ่มเอฟเฟกต์การสั่น (สั่นเร็วๆ เป็นเวลา 0.5 วินาที)
+  // เริ่มเอฟเฟกต์การสั่น (ใช้จังหวะ 1.5 วินาทีตามโค้ดเดิมของคุณ)
   card.style.animation = "shake 1.5s infinite"; 
 
   setTimeout(() => {
-    // 2. หยุดสั่นและเริ่มทำให้การ์ดจางหายไป (ใช้เวลา 1.5 วินาทีตาม CSS)
+    // เริ่มจางหายไปเพื่อเปลี่ยนเนื้อหา
     card.style.animation = "none"; 
     card.style.opacity = "0";
-    card.style.transform = "scale(0.9) rotate(2deg)"; 
+    card.style.transform = "scale(0.9) rotate(2deg)";
 
-    // 3. รอจนการ์ดจางหายสนิท (1500ms) แล้วจึงเปลี่ยนเนื้อหาข้างใน
     setTimeout(() => {
-      // สร้างหัวข้อ 🎄Merry Christmas🎄 ไว้บนสุด
-      const title = document.createElement("div");
-      title.innerHTML = "🎄Merry Christmas🎄";
-      title.style.fontSize = "1.95rem";
-      title.style.fontWeight = "bold";
-      title.style.color = "#c62828";
-      title.style.marginBottom = "5px";
-      card.insertBefore(title, h1);
+      // ตรวจสอบลำดับหน้า
+      if (currentStep === 1) {
+        h1.innerHTML = "🎁";
+        textElement.innerHTML = "พร้อมนะ!!";
+        textElement.style.animation = "none";
+      } 
+      else if (currentStep === 2) {
+        h1.innerHTML = "✨";
+        textElement.innerHTML = "ขอให้คริสต์มาสปีนี้พิเศษกว่าปีไหนๆ";
+      }
+      else if (currentStep === 3) {
+        // หน้าที่ 3: เรื่องถุงเท้า (เพิ่มใหม่ตามคำขอ)
+        h1.innerHTML = "🧦"; 
+        textElement.style.fontSize = "1.2rem"; 
+        textElement.innerHTML = "อ้อ! แอบเห็นว่าถุงเท้าคู่เดิมเริ่มขาดแล้ว...<br>เลยซื้อคู่ใหม่มาให้ใส่ไปทำงานน่ะ 😁"; 
+      }
+      else if (currentStep === 4) {
+        // หน้าที่ 4: หน้าสุดท้าย (ย้ายมาจากหน้าที่ 3 เดิม)
+        const title = document.createElement("div");
+        title.innerHTML = "🎄 Merry Christmas 🎄";
+        title.style.fontSize = "1.9rem";
+        title.style.fontWeight = "bold";
+        title.style.color = "#c62828";
+        title.style.marginBottom = "10px";
+        card.insertBefore(title, h1);
 
-      // ปรับขนาดกระต่าย (อยู่ตรงกลาง)
-      h1.style.fontSize = "10rem";
-      h1.style.margin = "10px 0";
+        h1.innerHTML = "🐰";
+        h1.style.fontSize = "6rem";
+        h1.style.margin = "10px 0";
+        
+        textElement.style.fontSize = "1.5rem";
+        textElement.style.fontWeight = "normal";
+        textElement.style.color = "#c62828";
+        textElement.innerHTML = `"ให้ทุกเรื่องราวต่อจากนี้ใจดีกับเธอ เหมือนที่เธอใจดีกับทุกคนเสมอมา"`;
+        
+        startSnow(); // เริ่มหิมะตกในหน้าสุดท้าย
+      }
 
-      // ปรับคำอวยพร (อยู่ล่างสุด)
-      textElement.style.animation = "none";
-      textElement.style.fontSize = "1.5rem";
-      textElement.style.fontWeight = "normal";
-      textElement.style.color = "#c62828";
-      textElement.innerHTML = `"ให้ทุกเรื่องราวต่อจากนี้ใจดีกับเธอ เหมือนที่เธอใจดีกับทุกคนเสมอมา"`;
-
-      // 4. แสดงการ์ดกลับคืนมาอย่างนุ่มนวล
+      // แสดงการ์ดกลับคืนมา
       card.style.opacity = "1";
-      card.style.transform = "scale(1) rotate(0deg)"; 
-      
-      startSnow();
-    }, 1500); // ระยะเวลาจางหาย 1.5 วินาที
-  }, 2500); // ระยะเวลาสั่นก่อนจาง 0.5 วินาที
+      card.style.transform = "scale(1) rotate(0deg)";
+
+      // ถ้ายังไม่ถึงหน้าสุดท้าย ให้เปลี่ยนหน้าอัตโนมัติ (หน่วงเวลาอ่าน 3 วินาที)
+      if (currentStep < 4) {
+        setTimeout(showNextPage, 3000);
+      }
+    }, 1500); 
+  }, 2500); // ระยะเวลาสั่นก่อนจางตามโค้ดเดิมของคุณ
 }
 
-/* snow effect */
+/* --- ระบบหิมะตก (คงเดิม) --- */
 const canvas = document.getElementById("snow");
 const ctx = canvas.getContext("2d");
 let snowTop = [];
@@ -93,11 +116,9 @@ function startSnow() {
       ctx.beginPath();
       ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
       ctx.fill();
-      
       f.y += f.s;
       f.x += Math.sin(f.a) * 0.5;
       f.a += f.as;
-
       let currentX = Math.floor(f.x);
       if (currentX >= 0 && currentX < canvas.width) {
         if (f.y > canvas.height - snowTop[currentX]) {
