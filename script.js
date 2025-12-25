@@ -26,7 +26,7 @@ function startCard() {
       // สร้างหัวข้อ 🎄Merry Christmas🎄 ไว้บนสุด
       const title = document.createElement("div");
       title.innerHTML = "🎄Merry Christmas🎄";
-      title.style.fontSize = "0.2rem";
+      title.style.fontSize = "1.95rem";
       title.style.fontWeight = "bold";
       title.style.color = "#c62828";
       title.style.marginBottom = "5px";
